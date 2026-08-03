@@ -1,0 +1,30 @@
+// Prisma schema for the Auth MVP
+// Docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  // Pooled connection used at runtime (Supabase PgBouncer, port 6543)
+  url       = env("DATABASE_URL")
+  // Direct connection used only for migrations (port 5432)
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  // ------------------------------------------------------------------
+  // ⚠️ LEARNING PROJECT ONLY: password is stored in PLAINTEXT.
+  // Never do this in a real application.
+  // Before shipping anything real, replace with a hashed value using
+  // bcrypt/argon2 — see src/lib/validations.ts and the signup route
+  // handler for the exact spot to add hashing.
+  // ------------------------------------------------------------------
+  password  String
+  createdAt DateTime @default(now())
+
+  @@map("users")
+}
