@@ -1,5 +1,7 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getSession } from "@/lib/session";
+import { characters } from "@/lib/characters";
 import LogoutButton from "@/components/LogoutButton";
 
 // This page is also guarded by src/middleware.ts, which redirects
@@ -20,37 +22,26 @@ export default async function DashboardPage() {
       </header>
 
       <main className="mx-auto max-w-5xl px-4 py-10 sm:px-6">
-        <div className="rounded-2xl border border-gray-200 bg-white p-8 shadow-sm">
-          <h2 className="text-xl font-semibold text-gray-900">
-            Welcome back 👋
-          </h2>
-          <p className="mt-2 text-sm text-gray-500">
-            You&apos;re signed in as{" "}
-            <span className="font-medium text-gray-900">{session.email}</span>
-          </p>
+        <h2 className="text-3xl font-bold text-gray-900">Choose Your Character</h2>
 
-          <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
-            <div className="rounded-xl bg-gray-50 p-5">
-              <p className="text-xs font-medium uppercase tracking-wide text-gray-500">
-                User ID
-              </p>
-              <p className="mt-1 truncate text-sm font-mono text-gray-900">
-                {session.userId}
-              </p>
-            </div>
-            <div className="rounded-xl bg-gray-50 p-5">
-              <p className="text-xs font-medium uppercase tracking-wide text-gray-500">
-                Email
-              </p>
-              <p className="mt-1 text-sm text-gray-900">{session.email}</p>
-            </div>
-            <div className="rounded-xl bg-gray-50 p-5">
-              <p className="text-xs font-medium uppercase tracking-wide text-gray-500">
-                Status
-              </p>
-              <p className="mt-1 text-sm text-green-600">Authenticated</p>
-            </div>
-          </div>
+        <div className="mt-8 space-y-4">
+          {characters.map((character) => (
+            <Link
+              key={character.slug}
+              href={`/dashboard/${character.slug}`}
+              className="flex items-center gap-6 rounded-2xl border border-gray-200 bg-white p-4 shadow-sm transition hover:bg-gray-50 hover:shadow-md"
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={character.image}
+                alt={character.name}
+                className="h-20 w-20 rounded-xl object-cover"
+              />
+              <span className="text-xl font-semibold text-gray-900">
+                {character.name}
+              </span>
+            </Link>
+          ))}
         </div>
       </main>
     </div>
