@@ -8,31 +8,58 @@ export default async function LoginPage() {
   if (session) redirect("/dashboard");
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4 py-12">
-      <div className="w-full max-w-sm">
-        <div className="mb-8 text-center">
-          <h1 className="text-2xl font-bold tracking-tight text-gray-900">
-            Welcome back
-          </h1>
-          <p className="mt-2 text-sm text-gray-500">
-            Sign in to access your dashboard
+    <main className="relative flex min-h-screen flex-col overflow-hidden bg-[#0d0d0d]">
+      {/* Video background */}
+      <video
+        autoPlay
+        loop
+        muted
+        playsInline
+        className="absolute inset-0 h-full w-full object-cover"
+      >
+        <source src="/videos/landing.mp4" type="video/mp4" />
+      </video>
+
+      {/* Dark overlay for readability */}
+      <div className="absolute inset-0 bg-black/70" />
+
+      {/* Content */}
+      <div className="relative z-10 flex flex-1 items-center justify-center px-6">
+        <div className="w-full max-w-[360px]">
+          {/* Heading */}
+          <div className="mb-10 text-center">
+            <h1 className="text-[32px] font-semibold tracking-tight text-white">
+              Welcome back
+            </h1>
+          </div>
+
+          {/* Form */}
+          <AuthForm mode="login" />
+
+          {/* Bottom link */}
+          <p className="mt-8 text-center text-sm text-[#8e8ea0]">
+            Don't have an account?{" "}
+            <Link
+              href="/signup"
+              className="font-medium text-white hover:underline"
+            >
+              Create one
+            </Link>
           </p>
         </div>
-
-        <div className="rounded-2xl border border-gray-200 bg-white p-8 shadow-sm">
-          <AuthForm mode="login" />
-        </div>
-
-        <p className="mt-6 text-center text-sm text-gray-500">
-          Don&apos;t have an account?{" "}
-          <Link
-            href="/signup"
-            className="font-medium text-brand-600 hover:text-brand-700"
-          >
-            Create one
-          </Link>
-        </p>
       </div>
-    </div>
+
+      {/* Footer */}
+      <footer className="relative z-10 pb-8">
+        <div className="flex justify-center gap-6 text-xs text-[#8e8ea0]">
+          <Link href="/terms" className="hover:text-white">
+            Terms of use
+          </Link>
+          <Link href="/privacy" className="hover:text-white">
+            Privacy policy
+          </Link>
+        </div>
+      </footer>
+    </main>
   );
 }
