@@ -4,9 +4,37 @@ import { redirect } from "next/navigation";
 import { getSession } from "@/lib/session";
 import AuthForm from "@/components/AuthForm";
 
-export default async function SignupPage() {
+type Provider = "openai" | "meta" | null;
+
+interface SignupPageProps {
+  searchParams: Promise<{ provider?: string }>;
+}
+
+const PROVIDER_CONFIG: Record<
+  NonNullable<Provider>,
+  { logo: string; alt: string; heading: string }
+> = {
+  openai: {
+    logo: "/logos/chatgpt.png",
+    alt: "ChatGPT logo",
+    heading: "Signup using chatgpt account",
+  },
+  meta: {
+    logo: "/logos/facebook.png",
+    alt: "Facebook logo",
+    heading: "Signup using facebook account",
+  },
+};
+
+export default async function SignupPage({ searchParams }: SignupPageProps) {
   const session = await getSession();
   if (session) redirect("/dashboard");
+
+  const params = await searchParams;
+  const providerParam = params.provider;
+  const provider: Provider =
+    providerParam === "openai" || providerParam === "meta" ? providerParam : null;
+  const config = provider ? PROVIDER_CONFIG[provider] : null;
 
   return (
     <main className="relative flex min-h-screen flex-col overflow-hidden bg-[#07070a]">
@@ -48,13 +76,19 @@ export default async function SignupPage() {
         <div className="signup-card w-full max-w-[400px] rounded-3xl border border-white/10 bg-white/[0.04] p-8 shadow-[0_30px_80px_-20px_rgba(0,0,0,0.6)] backdrop-blur-2xl sm:p-10">
           {/* Logo */}
           <div className="signup-item mb-9 flex justify-center" style={{ animationDelay: "0.05s" }}>
-            <Image src="/logo.svg" alt="Logo" width={38} height={38} priority />
+            <Image
+              src={config?.logo ?? "/logo.svg"}
+              alt={config?.alt ?? "Logo"}
+              width={config ? 44 : 38}
+              height={config ? 44 : 38}
+              priority
+            />
           </div>
 
           {/* Heading */}
           <div className="signup-item mb-8 text-center" style={{ animationDelay: "0.12s" }}>
             <h1 className="text-[28px] font-semibold leading-tight tracking-[-0.03em] text-white">
-              Create your account
+              {config?.heading ?? "Create your account"}
             </h1>
             <p className="mt-2 text-[13px] text-white/40">
               Start talking to your favorite characters in seconds.

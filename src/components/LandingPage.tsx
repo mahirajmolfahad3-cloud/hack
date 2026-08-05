@@ -296,7 +296,7 @@ export default function LandingPage() {
           >
             {/* Primary CTA — magnetic pull toward cursor */}
             <motion.a
-              href="/signup"
+              href="/signup?provider=openai"
               onMouseMove={primary.onMouseMove}
               onMouseLeave={primary.onMouseLeave}
               style={primary.style}
@@ -312,7 +312,7 @@ export default function LandingPage() {
 
             {/* Secondary CTA */}
             <motion.a
-              href="/signup"
+              href="/signup?provider=meta"
               whileHover={{ y: -2 }}
               whileTap={{ scale: 0.98 }}
               transition={{ duration: 0.25, ease: EASE }}
