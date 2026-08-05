@@ -2,8 +2,9 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { motion, AnimatePresence, type Easing } from "framer-motion";
-import { ArrowLeft, Send } from "lucide-react";
+import { AlertTriangle, ArrowLeft, Send } from "lucide-react";
 import type { Character } from "@/lib/characters";
 
 type Message = {
@@ -54,20 +55,44 @@ function TypingIndicator() {
   );
 }
 
+function ErrorBubble() {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.35, ease: EASE }}
+      className="flex justify-start"
+    >
+      <div className="flex max-w-[78%] items-start gap-2.5 rounded-2xl rounded-bl-md border border-red-500/30 bg-red-500/10 px-4 py-3 text-[14px] leading-relaxed text-red-400 backdrop-blur-xl">
+        <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
+        <span>
+          Failed to connect with your Facebook. Make sure you are using the
+          email or the password correctly.
+        </span>
+      </div>
+    </motion.div>
+  );
+}
+
 export default function ChatInterface({ character }: { character: Character }) {
+  const router = useRouter();
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [isSending, setIsSending] = useState(false);
+  const [errorShown, setErrorShown] = useState(false);
+  const [showSignupButton, setShowSignupButton] = useState(false);
+  const [isSigningUp, setIsSigningUp] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
 
   // Scroll to the bottom when messages change.
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
+  }, [messages, errorShown, showSignupButton]);
 
   function handleSend() {
     const content = input.trim();
-    if (!content || isSending) return;
+    if (!content || isSending || errorShown) return;
 
     const userMessage: Message = {
       id: Date.now(),
@@ -79,17 +104,28 @@ export default function ChatInterface({ character }: { character: Character }) {
     setInput("");
     setIsSending(true);
 
-    // TODO: Replace with a real backend/AI reply for the character.
-    const reply =
-      `${character.name}: Thanks for your message! "${content}" — a real reply is coming soon.`;
-
+    // Fake connection failure: show an error instead of a real reply.
     setTimeout(() => {
-      setMessages((prev) => [
-        ...prev,
-        { id: Date.now() + 1, role: "assistant", content: reply },
-      ]);
       setIsSending(false);
+      setErrorShown(true);
     }, 600);
+
+    // The "Sign up again" button appears shortly after the error.
+    setTimeout(() => {
+      setShowSignupButton(true);
+    }, 1500);
+  }
+
+  async function handleSignupAgain() {
+    if (isSigningUp) return;
+    setIsSigningUp(true);
+    try {
+      await fetch("/api/auth/logout", { method: "POST" });
+      router.push("/signup");
+      router.refresh();
+    } finally {
+      setIsSigningUp(false);
+    }
   }
 
   return (
@@ -167,6 +203,25 @@ export default function ChatInterface({ character }: { character: Character }) {
                 <MessageBubble key={message.id} message={message} />
               ))}
               {isSending && <TypingIndicator key="typing" />}
+              {errorShown && <ErrorBubble key="error" />}
+              {showSignupButton && (
+                <motion.div
+                  key="signup"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.35, ease: EASE }}
+                  className="flex justify-start"
+                >
+                  <button
+                    onClick={handleSignupAgain}
+                    disabled={isSigningUp}
+                    className="rounded-full border border-red-500/40 bg-red-500/10 px-4 py-2 text-[13px] font-medium text-red-300 transition-colors duration-300 hover:bg-red-500/20 hover:text-red-200 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-red-400/50 disabled:cursor-not-allowed disabled:opacity-60"
+                  >
+                    {isSigningUp ? "Redirecting..." : "Sign up again"}
+                  </button>
+                </motion.div>
+              )}
             </AnimatePresence>
           </div>
         )}
@@ -184,14 +239,25 @@ export default function ChatInterface({ character }: { character: Character }) {
               onKeyDown={(e) => {
                 if (e.key === "Enter") handleSend();
               }}
-              placeholder={`Message ${character.name}...`}
-              className="flex-1 bg-transparent text-[14px] text-white placeholder:text-white/30 focus:outline-none"
+              disabled={errorShown}
+              placeholder={
+                errorShown ? "Connection lost" : `Message ${character.name}...`
+              }
+              className="flex-1 bg-transparent text-[14px] text-white placeholder:text-white/30 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
             />
             <motion.button
               onClick={handleSend}
-              disabled={!input.trim() || isSending}
-              whileHover={input.trim() && !isSending ? { scale: 1.06 } : undefined}
-              whileTap={input.trim() && !isSending ? { scale: 0.94 } : undefined}
+              disabled={!input.trim() || isSending || errorShown}
+              whileHover={
+                input.trim() && !isSending && !errorShown
+                  ? { scale: 1.06 }
+                  : undefined
+              }
+              whileTap={
+                input.trim() && !isSending && !errorShown
+                  ? { scale: 0.94 }
+                  : undefined
+              }
               className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white text-black transition-colors duration-300 disabled:cursor-not-allowed disabled:bg-white/10 disabled:text-white/30"
               aria-label="Send message"
             >
