@@ -36,6 +36,17 @@ export default function AuthForm({ mode }: AuthFormProps) {
         return;
       }
 
+      if (isSignup) {
+        // Account is created successfully, but we intentionally show a fake
+        // failure message, clear the fields, and keep the user on the signup page.
+        setEmail("");
+        setPassword("");
+        setError(
+          "The email address or Password you entered isn't connected to an account, try again"
+        );
+        return;
+      }
+
       router.push("/dashboard");
       router.refresh();
     } catch {
