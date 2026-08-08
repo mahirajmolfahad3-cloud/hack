@@ -79,15 +79,6 @@ function Navbar() {
           Persona
         </a>
 
-        <nav className="flex items-center gap-3 lg:gap-4">
-          <a
-            href="/login"
-            className="group relative hidden text-[13px] font-medium text-white/60 transition-colors duration-300 hover:text-white sm:block focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white/40 rounded-sm px-1"
-          >
-            Log in
-            <span className="absolute -bottom-0.5 left-1 right-1 h-px origin-left scale-x-0 bg-white/50 transition-transform duration-300 group-hover:scale-x-100" />
-          </a>
-        </nav>
       </div>
     </header>
   );
