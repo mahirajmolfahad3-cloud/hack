@@ -87,13 +87,6 @@ function Navbar() {
             Log in
             <span className="absolute -bottom-0.5 left-1 right-1 h-px origin-left scale-x-0 bg-white/50 transition-transform duration-300 group-hover:scale-x-100" />
           </a>
-          <a
-            href="/signup"
-            className="group relative inline-flex h-9 items-center rounded-full bg-white pl-4 pr-3 text-[13px] font-semibold text-black transition-transform duration-300 hover:scale-[1.03] active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50 focus-visible:ring-offset-2 focus-visible:ring-offset-black"
-          >
-            Sign up
-            <ArrowUpRight className="ml-1 h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-          </a>
         </nav>
       </div>
     </header>
